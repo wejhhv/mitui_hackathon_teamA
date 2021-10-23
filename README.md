@@ -1,10 +1,8 @@
-# mitui_hackathon_teamA
-
-## APIの設計
-### お店がクーポンを作成する
-- APIのURL: ${baeURL}/coupon  
+#API設計
+## お店がクーポンを作成する
+- APIのURL: `/coupon `
 - Method: POST
-- フロントエンドから受け取るデータ  
+- 受け取るデータ  
 ```
 {
   shopId: number;
@@ -12,19 +10,19 @@
   sheetNumber: number;
 }
 ```
-- フロントエンドへと渡すデータ
+- レスポンス
 ```
 None
 ```
 
 ## カスタマーが使用できるクーポンの一覧
-- APIのURL: /coupons?shopId={number}&sheetNumber={number}
+- APIのURL:`/coupons?shopId={number}&sheetNumber={number}`
 - Method: GET
-- フロントエンドから受け取るデータ
+- 受け取るデータ
 ```
 None
 ```
-- フロントエンドへと渡すデータ
+- レスポンス
 ```
 [
   {

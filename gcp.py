@@ -35,7 +35,7 @@ class Coupon(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now,nullable=False)
 
 
-#テスト
+#テスト用
 @app.route("/")
 def index():
     return "お前、どこ園だ、バブゥ！？"
@@ -76,17 +76,16 @@ def create_coupon():
 #カスタマーが使用できるクーポンの一覧表示
 @app.route('/coupons/<int:shopId>/<int:sheetNumber>', methods=["GET"])
 def customer_coupons(shopId,sheetNumber):
+    x=shopId
 
-    #後でチェック
-    posts = Coupon.query.get(ShopId=shopId,used=0) 
+    posts = Coupon.query.filter_by(shopId=x).filter_by(used=0)
     
-    #チェック
-    print(posts)
+
     l=[]
-    for i in range(0,len(posts)):
-        st={'id': posts[i].id, 
-        'ShopId': posts[i].ShopId, 
-        'discountRate': posts[i].discountRate,}
+    for post in posts:
+        st={'id': post.id, 
+        'shopId': post.shopId, 
+        'discountRate': post.discountRate,}
         
         l.append(st)
     
@@ -98,15 +97,17 @@ def customer_coupons(shopId,sheetNumber):
 @app.route('/coupons/user_id',methods=["PATCH"])
 def customer_use_coupon():
 
-    if(not request.form["couponId"]):
-        print("No couponId")
-        return jsonify({'message': 'No couponId'}), 500
-
-    elif(not request.form["state"]):
+    
+    
+    if(not request.form["coupon_id"]):
+        print("No coupon_id")
+        return jsonify({'message': 'No coupon_id'}), 500
+    
+    if(not request.form["state"]):
         print("No state")
         return jsonify({'message': 'No state'}), 500
 
-    elif(not request.form["userid"]):
+    elif(not request.form["userId"]):
         print("No userid")
         return jsonify({'message': 'No userid'}), 500
 
@@ -116,10 +117,10 @@ def customer_use_coupon():
     
     else:
         #DB入力
-        post = Coupon.query.get(int(request.json["couponId"]))
-        post.used=int(request.json["state"])
-        post.user_id=int(request.json["userid"])
-        post.text=int(request.json["text"])
+        post = Coupon.query.get(int(request.form["coupon_id"]))
+        post.used=int(request.form["state"])
+        post.user_id=int(request.form["userId"])
+        post.text=request.form["text"]
 
         db.session.commit()
         
@@ -129,7 +130,34 @@ def customer_use_coupon():
 #レシーバーのクーポン一覧表示
 @app.route('/receiver/coupons',methods=["GET"])
 def receiver_coupon():
-    return "adsds"
+    
+    posts = Coupon.query.filter_by(used=1)
+    for post in posts:
+        print(post)
+    
+    l=[]
+    for post in posts:
+        print(type(post.user_id))
+        user_post = User.query.filter_by(id=post.user_id)
+        user_post1 = User.query.get(post.user_id)  
+        print(type(user_post))
+        print(type(user_post1))
+
+        st={'id': post.id, 
+        'text': post.text, 
+        'sheetNumber': post.sheetNumber,
+        'shopId':post.shopId,
+        'user':{"name":user_post.name,
+                "age":user_post.age
+
+        }
+        }
+        
+        l.append(st)
+    
+
+    res=json.dumps(l)
+    return res
 
 
 #レシーバーのクーポン利用後で治す#############
@@ -202,6 +230,28 @@ def all_view_coupon():
         'qr':posts[i].qr,
         'discountRate':posts[i].discountRate,
         'sheetNumber':posts[i].sheetNumber
+        }
+
+        l.append(st)
+
+    #これでリストをjsonに変換
+    res=json.dumps(l)
+
+    return res
+
+
+#全てのUSERtableの値を確認する
+@app.route('/all_viwe_user', methods=["GET","POST"]) 
+def all_view_coupon():
+    posts = User.query.all()
+    l=[]
+    for i in range(0,len(posts)):
+        st={'id': posts[i].id, 
+        'name': posts[i].name, 
+        'age': posts[i].age, 
+        'sending': posts[i].sending,
+        'coupon_id': posts[i].coupon_id,
+        'type':posts[i].type,
         }
 
         l.append(st)

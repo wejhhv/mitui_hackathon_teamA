@@ -116,9 +116,9 @@ def self_create_coupon():
 @app.route('/coupon',methods=["POST","GET"])
 def create_coupon():
 
-    x= request.args.get("shopId")
-    y= request.args.get("sheetNumber")
-    z= request.args.get("discoiuntRate")
+    x = request.args.get("shopId")
+    y = request.args.get("sheetNumber")
+    z = request.args.get("discoiuntRate")
     
     '''
     if(not request.form["shopId"]): 
@@ -134,7 +134,6 @@ def create_coupon():
         return jsonify({'message': 'No sheetNumber'}), 500
     
     '''
-    print("")
     #else:
     new_post = Coupon(shopId=int(x),
                         discountRate=int(z),

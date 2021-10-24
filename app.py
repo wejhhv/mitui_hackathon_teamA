@@ -73,9 +73,6 @@ def create_users():
 
     db.session.add(new_post)
     db.session.commit()
-    db.session.close()
-
-    print(new_post.id)
 
     return jsonify({'userId': new_post.id}), 200
 
@@ -255,7 +252,7 @@ def all_view_coupon():
         'user_id': posts[i].user_id, 
         'text': posts[i].text, 
         'shopId': posts[i].shopId,
-        'shop_name':shop_name_list[posts.shopId],
+        'shop_name':shop_name_list[posts[i].shopId],
         'used': posts[i].used,
         'qr':posts[i].qr,
         'discountRate':posts[i].discountRate,

@@ -18,6 +18,23 @@
 ```
 None
 ```
+## ユーザが登録
+- APIのURL: `/create_users `
+- Method: POST
+- 受け取るデータ  
+```
+{
+  name:String,
+  age:Number,
+}
+```
+- レスポンス
+```
+{
+  userId:Number
+}
+```
+
 
 ## カスタマーが使用できるクーポンの一覧
 - APIのURL:`/coupons?shopId={number}&sheetNumber={number}`

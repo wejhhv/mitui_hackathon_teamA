@@ -113,12 +113,15 @@ def self_create_coupon():
 
 
 
+/coupon/shopId=1&shopId=1&discoiuntRate=1
+
 #店がクーポン作成
 @app.route('/coupon',methods=["POST","GET"])
 def create_coupon():
 
     x= request.args.get("shopId")
     y= request.args.get("sheetNumber")
+    z= request.args.get("discoiuntRate")
     
     '''
     if(not request.form["shopId"]): 
@@ -136,9 +139,9 @@ def create_coupon():
     '''
     print("")
     #else:
-    new_post = Coupon(shopId=int(request.json["shopId"]),
-                        discountRate=int(request.json["discountRate"]),
-                        sheetNumber=int(request.json["sheetNumber"]),
+    new_post = Coupon(shopId=int(x),
+                        discountRate=int(z),
+                        sheetNumber=int(y),
                         used=0,
         )
 
@@ -148,14 +151,13 @@ def create_coupon():
 
     return jsonify({'message': 'Complete Coupon Create'}), 200
 
-/coupon/shopId=1&shopId=1&discoiuntRate=1
+
 
 #カスタマーが使用できるクーポンの一覧表示
 @app.route('/coupons', methods=["GET"])
 def customer_coupons():
     x= request.args.get("shopId")
     y= request.args.get("sheetNumber")
-    z= request.args.get("discoiuntRate")
 
     #sheetNumber = request.args.get("sheetNumber")
     posts = Coupon.query.filter_by(shopId=x).filter_by(used=0)

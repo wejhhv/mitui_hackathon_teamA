@@ -254,6 +254,7 @@ def receiver_coupon():
 @app.route('/coupons/used',methods=["PATCH"])
 def use_receiver_coupon():
     
+    '''
     if(not request.json["coupon_id"]):
         print("No coupon_id")
         return jsonify({'message': 'No coupon_id'}), 500
@@ -263,13 +264,14 @@ def use_receiver_coupon():
         return jsonify({'message': 'No state'}), 500
     
     
-    else:
-        post = Coupon.query.get(int(request.json["coupon_id"]))
-        post.used=2
+    '''
+    #else:
+    post = Coupon.query.get(int(request.json["coupon_id"]))
+    post.used=2
 
-        db.session.commit()
+    db.session.commit()
 
-        return jsonify({'message': 'Complete Coupon Use'}), 200
+    return jsonify({'message': 'Complete Coupon Use'}), 200
 
 
 

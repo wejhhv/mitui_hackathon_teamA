@@ -103,23 +103,49 @@ None
 
 
 ## テスト用
-### ユーザーテーブルの確認
-- APIのURL: `/coupons/used`
-- Method: PATCH
-- フロントエンドから受け取るデータ  
-```
-{　
-  coupon_id:number
-  state: 3;
-};
-```
-- レスポンス
+### クーポンの確認
+- APIのURL: `/all_viwe_coupon`
+- Method: GET
+- 受け取るデータ  
 ```
 None
 ```
+- レスポンス
+```
+[
+  {
+    id: number;
+    user_id: number;
+    ShopId: number;
+    used:number;
+    qr:String;
+    discountRate:number;
+    sheetNumber:number;
+  },
+];
+```
 
-### クーポンテーブルの作成
-
+### ユーザテーブルの確認
+- APIのURL: `/all_viwe_user`
+- Method: GET
+- フロントエンドから受け取るデータ  
+```
+None
+```
+- レスポンス
+```
+[
+  {
+    id: number;
+    name: number;
+    age: number;
+    sending:number;
+    coupon_id:number;
+    type:number;
+    sheetNumber:number;
+  },
+];
+```
 
 ## 補足
 - 正常な受け取りデータについてはすべて

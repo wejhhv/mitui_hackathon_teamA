@@ -252,7 +252,6 @@ def use_receiver_coupon():
     
     '''
     #else:
-    print(request.json["coupon_id"])
     post = Coupon.query.get(int(request.json["coupon_id"]))
     post.used=2
 

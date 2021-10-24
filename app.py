@@ -188,7 +188,7 @@ def use_receiver_coupon():
     
     
     else:
-        post = Coupon.query.get(int(request.form["state"]))
+        post = Coupon.query.get(int(request.form["coupon_id"]))
         post.used=int(request.form["state"])
 
         db.session.commit()
@@ -198,20 +198,20 @@ def use_receiver_coupon():
 
 
 #レシーバが客のQRを読み取った
-@app.route('/coupons/used',methods=["PATCH"])
+@app.route('/coupons/read',methods=["PATCH"])
 def read_coupon():
 
-    if("couponId" not in request.json):
-        print("No couponId")
-        return jsonify({'message': 'No couponId'}), 500
-
-    elif("state" not in request.json):
+    if(not request.form["state"]):
         print("No state")
         return jsonify({'message': 'No state'}), 500
+
+    elif(not request.form["coupon_id"]):
+        print("No coupon_id")
+        return jsonify({'message': 'No coupon_id'}), 500
     
     else:
-        post = Coupon.query.get(int(request.json["couponId"]))
-        post.used=int(request.json["state"])
+        post = Coupon.query.get(int(request.form["coupon_id"]))
+        post.used=int(request.form["state"])
 
         db.session.commit()
 

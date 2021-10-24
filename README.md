@@ -90,7 +90,7 @@ None
 None
 ```
 ## レシーバが客のQRを読み取るとき
-- APIのURL: `/coupons/used`
+- APIのURL: `/coupons/read`
 - Method: PATCH
 - フロントエンドから受け取るデータ  
 ```

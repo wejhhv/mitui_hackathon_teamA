@@ -15,8 +15,8 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
     name = db.Column(db.String(50), nullable=True)
-    age = db.Column(db.Integer, nullable=False)
-    sending=db.Column(db.Boolean, nullable=False, default=True)
+    age = db.Column(db.Integer, nullable=True)
+    sending=db.Column(db.Boolean, nullable=True, default=True)
     coupon_id = db.Column(db.Integer, nullable=True)
     type = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now,nullable=False)
@@ -40,8 +40,23 @@ class Coupon(db.Model):
 def index():
     return "お前、どこ園だ、バブゥ！？"
 
+#テスト用にuserの作成
+@app.route('/create_user',methods=["POST","GET"])
+def create_user():
+    new_post = User(name="masatoshi",
+                    age=30,
+                    type=1,
+        )
+
+    db.session.add(new_post)
+    db.session.commit()
+    db.session.close()
+
+    return jsonify({'message': 'Complete Coupon Create'}), 200
+
+
 #クーポン作成
-@app.route('/create_coupon',methods=["POST"])
+@app.route('/create_coupon',methods=["POST","GET"])
 def create_coupon():
     print(int(request.form["shopId"]))
     
@@ -132,16 +147,14 @@ def customer_use_coupon():
 def receiver_coupon():
     
     posts = Coupon.query.filter_by(used=1)
-    for post in posts:
-        print(post)
-    
+     
     l=[]
     for post in posts:
-        print(type(post.user_id))
-        user_post = User.query.filter_by(id=post.user_id)
-        user_post1 = User.query.get(post.user_id)  
-        print(type(user_post))
-        print(type(user_post1))
+        id=post.user_id
+        #user_post = User.query.filter_by(id=post.user_id)
+        user_post = User.query.get(id)  
+    
+        print((user_post.id))
 
         st={'id': post.id, 
         'text': post.text, 
@@ -230,9 +243,10 @@ def all_view_coupon():
 
 #全てのUSERtableの値を確認する
 
-'''
+
+
 @app.route('/all_viwe_user', methods=["GET","POST"]) 
-def all_view_coupon():
+def all_view_user():
     posts = User.query.all()
     l=[]
     for i in range(0,len(posts)):
@@ -251,7 +265,6 @@ def all_view_coupon():
 
     return res
 
-'''
 
 if __name__=="__main__":
     app.run(debug=True)

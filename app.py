@@ -118,7 +118,11 @@ def create_coupon():
 
     x = request.args.get("shopId")
     y = request.args.get("sheetNumber")
-    z = request.args.get("discoiuntRate")
+    z = request.args.get("discountRate")
+
+    print(x)
+    print(y)
+    print(z)
     
     '''
     if(not request.form["shopId"]): 

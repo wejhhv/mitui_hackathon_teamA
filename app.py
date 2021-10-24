@@ -15,7 +15,7 @@ CORS(app)
 db = SQLAlchemy(app)
 
 shop_name_list=["北海道商店","東北商店","関東商店","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
-_list=["ビール","サワー","食べ放題","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
+coupon_list=["ビール","サワー","食べ放題","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
@@ -48,7 +48,7 @@ def index():
     return "お前、どこ園だ、バブゥ！？"
 
 #テスト用にuserの作成
-@app.route('/create_user',methods=["POST","GET"])
+@app.route('/create_user',methods=["POST","GET","PATCH"])
 def create_user():
     new_post = User(name="masatoshi",
                     age=30,
@@ -64,7 +64,18 @@ def create_user():
 #ユーザの仮登録
 @app.route('/create_users',methods=["POST","GET"])
 def create_users():
+    
+    new_post = User(name=request.json["name"],
+                    age=request.json["age"],
+        )
 
+    db.session.add(new_post)
+    db.session.commit()
+
+    return jsonify({'userId': new_post.id}), 200
+
+
+'''
     if(not request.form["name"]): 
         print("No name")
         return jsonify({'message': 'No name'}), 500
@@ -81,6 +92,7 @@ def create_users():
     db.session.commit()
 
     return jsonify({'userId': new_post.id}), 200
+'''
 
 
 #クーポン作成

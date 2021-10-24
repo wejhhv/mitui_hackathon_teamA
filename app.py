@@ -94,11 +94,40 @@ def create_users():
     return jsonify({'userId': new_post.id}), 200
 '''
 
+#自分でクーポン作成
+@app.route('/create_coupon',methods=["POST","GET"])
+def self_create_coupon():
+    
+    if(not request.form["shopId"]): 
+        print("No shopId")
+        return jsonify({'message': 'No shopId'}), 500
+
+    elif(not request.form["discountRate"]):
+        print("No discountRate")
+        return jsonify({'message': 'No discountRate'}), 500
+
+    elif(not request.form["sheetNumber"]):
+        print("No sheetNumber")
+        return jsonify({'message': 'No sheetNumber'}), 500
+    
+    else:
+        new_post = Coupon(shopId=int(request.json["shopId"]),
+                            discountRate=int(request.json["discountRate"]),
+                            sheetNumber=int(request.json["sheetNumber"]),
+                            used=0,
+            )
+
+        db.session.add(new_post)
+        db.session.commit()
+        db.session.close()
+
+        return jsonify({'message': 'Complete Coupon Create'}), 200
+
+
 
 #店がクーポン作成
 @app.route('/coupon',methods=["POST","GET"])
 def create_coupon():
-    print(int(request.form["shopId"]))
     
     '''
     if(not request.form["shopId"]): 

@@ -78,7 +78,7 @@ def create_users():
 
 
 #クーポン作成
-@app.route('/create_coupon',methods=["POST","GET"])
+@app.route('/coupon',methods=["POST","GET"])
 def create_coupon():
     print(int(request.form["shopId"]))
     
@@ -267,9 +267,6 @@ def all_view_coupon():
     return res
 
 #全てのUSERtableの値を確認する
-
-
-
 @app.route('/all_viwe_user', methods=["GET","POST"]) 
 def all_view_user():
     posts = User.query.all()
@@ -291,5 +288,6 @@ def all_view_user():
     return res
 
 
+#最終的には"debug=False"に変更
 if __name__=="__main__":
     app.run(debug=True)

@@ -155,7 +155,7 @@ def customer_coupons(shopId,sheetNumber):
 def customer_use_coupon():
 
     
-    
+    '''
     if(not request.form["coupon_id"]):
         print("No coupon_id")
         return jsonify({'message': 'No coupon_id'}), 500
@@ -171,18 +171,19 @@ def customer_use_coupon():
     elif(not request.form["text"]):
         print("No text")
         return jsonify({'message': 'No text'}), 500
+    '''
     
-    else:
+    #else:
         #DB入力
-        post = Coupon.query.get(int(request.form["coupon_id"]))
-        post.used=int(request.form["state"])
-        post.user_id=int(request.form["userId"])
-        post.text=request.form["text"]
+    post = Coupon.query.get(int(request.json["coupon_id"]))
+    post.used=int(request.json["state"])
+    post.user_id=int(request.json["userId"])
+    post.text=request.json["text"]
 
-        db.session.commit()
+    db.session.commit()
         
 
-        return jsonify({'message': 'Used Coustomer_cuupon'}), 200
+    return jsonify({'message': 'Used Coustomer_cuupon'}), 200
 
 #レシーバーのクーポン一覧表示
 @app.route('/receiver/coupons',methods=["GET"])
@@ -242,7 +243,8 @@ def use_receiver_coupon():
 #レシーバが客のQRを読み取った
 @app.route('/coupons/read',methods=["PATCH"])
 def read_coupon():
-
+    
+    '''
     if(not request.form["state"]):
         print("No state")
         return jsonify({'message': 'No state'}), 500
@@ -250,14 +252,14 @@ def read_coupon():
     elif(not request.form["coupon_id"]):
         print("No coupon_id")
         return jsonify({'message': 'No coupon_id'}), 500
-    
-    else:
-        post = Coupon.query.get(int(request.form["coupon_id"]))
-        post.used=int(request.form["state"])
+    '''
+    #else:
+    post = Coupon.query.get(int(request.form["coupon_id"]))
+    post.used=int(request.form["state"])
 
-        db.session.commit()
+    db.session.commit()
 
-        return jsonify({'message': 'Complete Coupon Use'}), 200
+    return jsonify({'message': 'Complete Coupon Use'}), 200
 
 
 

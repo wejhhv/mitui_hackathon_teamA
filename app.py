@@ -228,8 +228,9 @@ def all_view_coupon():
 
     return res
 
-
 #全てのUSERtableの値を確認する
+
+'''
 @app.route('/all_viwe_user', methods=["GET","POST"]) 
 def all_view_coupon():
     posts = User.query.all()
@@ -250,11 +251,7 @@ def all_view_coupon():
 
     return res
 
-
-@app.route('/coupon', methods=["POST"])
-def coupon():
-    return "asd"
-
+'''
 
 if __name__=="__main__":
     app.run(debug=True)

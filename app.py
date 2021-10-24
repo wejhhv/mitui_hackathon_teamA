@@ -130,8 +130,10 @@ def create_coupon():
 
 #カスタマーが使用できるクーポンの一覧表示
 @app.route('/coupons', methods=["GET"])
-def customer_coupons(shopId,sheetNumber):
+def customer_coupons():
     x= request.args.get("shopId")
+    y= request.args.get("sheetNumber")
+
     #sheetNumber = request.args.get("sheetNumber")
     posts = Coupon.query.filter_by(shopId=x).filter_by(used=0)
     

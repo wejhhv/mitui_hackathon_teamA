@@ -111,9 +111,9 @@ def self_create_coupon():
         return jsonify({'message': 'No sheetNumber'}), 500
     
     else:
-        new_post = Coupon(shopId=int(request.json["shopId"]),
-                            discountRate=int(request.json["discountRate"]),
-                            sheetNumber=int(request.json["sheetNumber"]),
+        new_post = Coupon(shopId=int(request.form["shopId"]),
+                            discountRate=int(request.form["discountRate"]),
+                            sheetNumber=int(request.form["sheetNumber"]),
                             used=0,
             )
 

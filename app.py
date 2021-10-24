@@ -11,6 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+shop_name=[""]
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
@@ -123,8 +124,8 @@ def customer_use_coupon():
         return jsonify({'message': 'No state'}), 500
 
     elif(not request.form["userId"]):
-        print("No userid")
-        return jsonify({'message': 'No userid'}), 500
+        print("No userId")
+        return jsonify({'message': 'No userId'}), 500
 
     elif(not request.form["text"]):
         print("No text")

@@ -1,4 +1,8 @@
 #API設計
+
+## エンドポイント
+`https://shrouded-lake-85715.herokuapp.com/`
+
 ## お店がクーポンを作成する
 - APIのURL: `/coupon `
 - Method: POST

@@ -1,149 +1,259 @@
-##flaskを扱った大まかな流れと方法
-# -*- coding: utf-8 -*-
 import datetime
 from flask import Flask,request,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime
 from sqlalchemy.sql.functions import current_timestamp
+import json
 
-app= Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cooking.db'
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.todo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSON_AS_ASCII'] = False
+
 db = SQLAlchemy(app)
 
 
-#setting database
-class Post(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    title = db.Column(db.String(50), nullable=False)
-    making_time = db.Column(db.String(50), nullable=False)
-    serves = db.Column(db.String(50), nullable=False)
-    ingredients = db.Column(db.String(50), nullable=False)
-    cost = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(50), nullable=True)
+    age = db.Column(db.Integer, nullable=False)
+    sending=db.Column(db.Boolean, nullable=False, default=True)
+    coupon_id = db.Column(db.Integer, nullable=True)
+    type = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now,nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now,nullable=False)
 
-@app.route('/recipes',methods=["POST"])
-def create():
+class Coupon(db.Model):
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    user_id = db.Column(db.Integer, nullable=True)
+    text = db.Column(db.String(200), nullable=True)
+    qr = db.Column(db.String(50), nullable=True)
+    shopId = db.Column(db.Integer, nullable=True)
+    used = db.Column(db.Integer, nullable=True)
+    discountRate=db.Column(db.Integer, nullable=True)
+    sheetNumber=db.Column(db.Integer, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now,nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now,nullable=False)
+
+
+#テスト用
+@app.route("/")
+def index():
+    return "お前、どこ園だ、バブゥ！？"
+
+#クーポン作成
+@app.route('/create_coupon',methods=["POST"])
+def create_coupon():
+    print(int(request.form["shopId"]))
     
-    if("title" not in request.json): 
-        print("titleが存在しない")
-        return jsonify({"message": "Recipe creation failed!","required": "title, making_time, serves, ingredients, cost"})
-    if("making_time" not in request.json):
-        print("making_timeが存在しない")
-        return jsonify({"message": "Recipe creation failed!","required": "title, making_time, serves, ingredients, cost"}) 
-    if("serves" not in request.json):
-        return jsonify({"message": "Recipe creation failed!","required": "title, making_time, serves, ingredients, cost"}) 
-    if("ingredients" not in request.json):
-        return jsonify({"message": "Recipe creation failed!","required": "title, making_time, serves, ingredients, cost"}) 
-    if("cost" not in request.json):
-        return jsonify({"message": "Recipe creation failed!","required": "title, making_time, serves, ingredients, cost"}) 
     
-    print("完璧な処理")
-    new_post = Post(title=request.json["title"], making_time=request.json["making_time"], serves=request.json["serves"],ingredients=request.json["ingredients"],cost=request.json["cost"])
+    if(not request.form["shopId"]): 
+        print("No shopId")
+        return jsonify({'message': 'No shopId'}), 500
 
-    db.session.add(new_post)
-    db.session.commit()
-            
-    return jsonify({"message": 'Recipe successfully created!',"recipe": [{"id": new_post.id,"title": new_post.title,"making_time": new_post.making_time,\
-    "serves": new_post.serves,"ingredients": new_post.ingredients,"cost": new_post.cost,"created_at": new_post.created_at,"updated_at": new_post.updated_at}]})
+    elif(not request.form["discountRate"]):
+        print("No discountRate")
+        return jsonify({'message': 'No discountRate'}), 500
+
+    elif(not request.form["sheetNumber"]):
+        print("No sheetNumber")
+        return jsonify({'message': 'No sheetNumber'}), 500
+    
+    else:
+        new_post = Coupon(shopId=int(request.form["shopId"]),
+                            discountRate=int(request.form["discountRate"]),
+                            sheetNumber=int(request.form["sheetNumber"]),
+                            used=0,
+        )
+
+        db.session.add(new_post)
+        db.session.commit()
+        db.session.close()
+
+        return jsonify({'message': 'Complete Coupon Create'}), 200
 
 
 
-@app.route('/recipes', methods=["GET"]) 
-def allselect():
-    posts = Post.query.all()
-    #リストを作ってそれをそのまま辞書に入れる
+#カスタマーが使用できるクーポンの一覧表示
+@app.route('/coupons/<int:shopId>/<int:sheetNumber>', methods=["GET"])
+def customer_coupons(shopId,sheetNumber):
+    x=shopId
+
+    posts = Coupon.query.filter_by(shopId=x).filter_by(used=0)
+    
+
     l=[]
-    for i in range(0,len(posts)):
-        st={'id': posts[i].id, 'title': posts[i].title, 'making_time': posts[i].making_time, 'serves': posts[i].serves, 'ingredients': posts[i].ingredients, 'cost': posts[i].cost}
+    for post in posts:
+        st={'id': post.id, 
+        'shopId': post.shopId, 
+        'discountRate': post.discountRate,}
+        
         l.append(st)
     
-    res={"recipes":l}
+
+    res=json.dumps(l)
     return res
 
-@app.route('/recipes/<int:id>', methods=["GET"]) 
-def oneselect(id):
-    
-    post = Post.query.get(id)
-    """
-    if post==None:
-        id=1
-        post = Post.query.get(id)
-    
-    if post==None:
-        return jsonify({"message": "No Recipe found"})
-    """
-    return jsonify({\
-    "message": "Recipe details by id",\
-    "recipe": [\
-    {\
-    "id": id,\
-    "title": post.title,\
-    "making_time": post.making_time,\
-    "serves": post.serves,\
-    "ingredients": post.ingredients,\
-    "cost": post.cost,\
-    }]})
+#カスタマーのクーポンを使用・発行
+@app.route('/coupons/user_id',methods=["PATCH"])
+def customer_use_coupon():
 
-@app.route('/recipes/<int:id>', methods=["PATCH"]) 
-def update(id):
     
-    post = Post.query.get(id)
-    if post==None:
-        id=1
-        post = Post.query.get(id)    
     
-    if post==None:
-        return jsonify({"message": "Recipe details by id","recipe":[]})
-
-
-    if("title" in request.form): 
-        post.title=request.form.get("title")
+    if(not request.form["coupon_id"]):
+        print("No coupon_id")
+        return jsonify({'message': 'No coupon_id'}), 500
     
-    if("making_time" in request.form): 
-        post.making_time=request.form.get("making_time")
+    if(not request.form["state"]):
+        print("No state")
+        return jsonify({'message': 'No state'}), 500
 
-    if("serves" in request.form): 
-        post.serves=request.form.get("serves")
+    elif(not request.form["userId"]):
+        print("No userid")
+        return jsonify({'message': 'No userid'}), 500
 
-    if("ingredients" in request.form): 
-        post.ingredients=request.form.get("ingredients")
+    elif(not request.form["text"]):
+        print("No text")
+        return jsonify({'message': 'No text'}), 500
     
-    if("cost" in request.form): 
-        post.const=request.form.get("cost")
-    
-    db.session.commit()
-
-    return jsonify({\
-    "message": "Recipe details by id",\
-    "recipe": [\
-    {\
-    "id": id,\
-    "title": post.title,\
-    "making_time": post.making_time,\
-    "serves": post.serves,\
-    "ingredients": post.ingredients,\
-    "cost": post.cost,\
-    }]})
-
-@app.route('/recipes/<int:id>', methods=["DELETE"]) # こちらに変更
-def delete(id):
-    
-       
-    if Post.query.get(id)==None:
-        id=1
-    
-    post = Post.query.get(id)
-    if post==None:
-        return jsonify({"message": "No Recipe found"})
-
     else:
-        db.session.delete(post)
+        #DB入力
+        post = Coupon.query.get(int(request.form["coupon_id"]))
+        post.used=int(request.form["state"])
+        post.user_id=int(request.form["userId"])
+        post.text=request.form["text"]
+
         db.session.commit()
+        
+
+        return jsonify({'message': 'Used Coustomer_cuupon'}), 200
+
+#レシーバーのクーポン一覧表示
+@app.route('/receiver/coupons',methods=["GET"])
+def receiver_coupon():
     
-        return jsonify({"message": "Recipe successfully removed!"})
+    posts = Coupon.query.filter_by(used=1)
+    for post in posts:
+        print(post)
+    
+    l=[]
+    for post in posts:
+        print(type(post.user_id))
+        user_post = User.query.filter_by(id=post.user_id)
+        user_post1 = User.query.get(post.user_id)  
+        print(type(user_post))
+        print(type(user_post1))
+
+        st={'id': post.id, 
+        'text': post.text, 
+        'sheetNumber': post.sheetNumber,
+        'shopId':post.shopId,
+        'user':{"name":user_post.name,
+                "age":user_post.age
+
+        }
+        }
+        
+        l.append(st)
+    
+
+    res=json.dumps(l)
+    return res
+
+
+#レシーバーのクーポン利用後で治す#############
+@app.route('/coupons/used',methods=["PATCH"])
+def use_receiver_coupon():
+    
+    if(not request.form["coupon_id"]):
+        print("No coupon_id")
+        return jsonify({'message': 'No coupon_id'}), 500
+    
+    elif(not request.form["state"]):
+        print("No state")
+        return jsonify({'message': 'No state'}), 500
+    
+    
+    else:
+        post = Coupon.query.get(int(request.form["state"]))
+        post.used=int(request.form["state"])
+
+        db.session.commit()
+
+        return jsonify({'message': 'Complete Coupon Use'}), 200
+
+
+
+#レシーバが客のQRを読み取った
+@app.route('/coupons/used',methods=["PATCH"])
+def read_coupon():
+
+    if("couponId" not in request.json):
+        print("No couponId")
+        return jsonify({'message': 'No couponId'}), 500
+
+    elif("state" not in request.json):
+        print("No state")
+        return jsonify({'message': 'No state'}), 500
+    
+    else:
+        post = Coupon.query.get(int(request.json["couponId"]))
+        post.used=int(request.json["state"])
+
+        db.session.commit()
+
+        return jsonify({'message': 'Complete Coupon Use'}), 200
+
+
+
+#全てのDBの値を確認する
+@app.route('/all_viwe_coupon', methods=["GET","POST"]) 
+def all_view_coupon():
+    posts = Coupon.query.all()
+    l=[]
+    for i in range(0,len(posts)):
+        st={'id': posts[i].id, 
+        'user_id': posts[i].user_id, 
+        'text': posts[i].text, 
+        'shopId': posts[i].shopId,
+        'used': posts[i].used,
+        'qr':posts[i].qr,
+        'discountRate':posts[i].discountRate,
+        'sheetNumber':posts[i].sheetNumber
+        }
+
+        l.append(st)
+
+    #これでリストをjsonに変換
+    res=json.dumps(l)
+
+    return res
+
+
+#全てのUSERtableの値を確認する
+@app.route('/all_viwe_user', methods=["GET","POST"]) 
+def all_view_coupon():
+    posts = User.query.all()
+    l=[]
+    for i in range(0,len(posts)):
+        st={'id': posts[i].id, 
+        'name': posts[i].name, 
+        'age': posts[i].age, 
+        'sending': posts[i].sending,
+        'coupon_id': posts[i].coupon_id,
+        'type':posts[i].type,
+        }
+
+        l.append(st)
+
+    #これでリストをjsonに変換
+    res=json.dumps(l)
+
+    return res
+
+
+@app.route('/coupon', methods=["POST"])
+def coupon():
+    return "asd"
 
 
 if __name__=="__main__":

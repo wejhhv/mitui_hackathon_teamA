@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-shop_name=[""]
+shop_name=["北海道商店","東北商店","関東商店","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
@@ -90,7 +90,7 @@ def create_coupon():
 
 
 #カスタマーが使用できるクーポンの一覧表示
-@app.route('/coupons/<int:shopId>/<int:sheetNumber>', methods=["GET"])
+@app.route('/coupons/shopId=<int:shopId>&sheetNumber=<int:sheetNumber>', methods=["GET"])
 def customer_coupons(shopId,sheetNumber):
     x=shopId
 

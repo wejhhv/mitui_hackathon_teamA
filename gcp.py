@@ -36,7 +36,7 @@ class Coupon(db.Model):
 
 
 #テスト用
-@app.route("/",methods=["GET","POST"])
+@app.route("/")
 def index():
     return "お前、どこ園だ、バブゥ！？"
 
@@ -187,16 +187,16 @@ def use_receiver_coupon():
 @app.route('/coupons/used',methods=["PATCH"])
 def read_coupon():
 
-    if("couponId" not in request.json):
-        print("No couponId")
-        return jsonify({'message': 'No couponId'}), 500
+    if(not request.form["coupon_id"]):
+        print("No coupon_id")
+        return jsonify({'message': 'No coupon_id'}), 500
 
-    elif("state" not in request.json):
+    elif(not request.form["state"]):
         print("No state")
         return jsonify({'message': 'No state'}), 500
     
     else:
-        post = Coupon.query.get(int(request.json["couponId"]))
+        post = Coupon.query.get(int(request.json["coupon_id"]))
         post.used=int(request.json["state"])
 
         db.session.commit()

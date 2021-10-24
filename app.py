@@ -95,7 +95,7 @@ def create_users():
 '''
 
 
-#クーポン作成
+#店がクーポン作成
 @app.route('/coupon',methods=["POST","GET"])
 def create_coupon():
     print(int(request.form["shopId"]))
@@ -129,10 +129,10 @@ def create_coupon():
 
 
 #カスタマーが使用できるクーポンの一覧表示
-@app.route('/coupons/shopId=<int:shopId>&sheetNumber=<int:sheetNumber>', methods=["GET"])
+@app.route('/coupons', methods=["GET"])
 def customer_coupons(shopId,sheetNumber):
-    x=shopId
-
+    x= request.args.get("shopId")
+    #sheetNumber = request.args.get("sheetNumber")
     posts = Coupon.query.filter_by(shopId=x).filter_by(used=0)
     
 

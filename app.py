@@ -183,7 +183,7 @@ def customer_coupons():
     res=json.dumps(l)
     return res
 
-#カスタマーのクーポンを使用・発行
+#カスタマーのクーポンを使用・発行usedは0→1
 @app.route('/coupons/user_id',methods=["PATCH"])
 def customer_use_coupon():
 
@@ -209,7 +209,7 @@ def customer_use_coupon():
     #else:
         #DB入力
     post = Coupon.query.get(int(request.json["coupon_id"]))
-    post.used=int(request.json["state"])
+    post.used=1
     post.user_id=int(request.json["userId"])
     post.text=request.json["text"]
 
@@ -250,22 +250,22 @@ def receiver_coupon():
     return res
 
 
-#レシーバーのクーポン利用後で治す#############
+#レシーバーのクーポン利用後1→2
 @app.route('/coupons/used',methods=["PATCH"])
 def use_receiver_coupon():
     
-    if(not request.form["coupon_id"]):
+    if(not request.json["coupon_id"]):
         print("No coupon_id")
         return jsonify({'message': 'No coupon_id'}), 500
     
-    elif(not request.form["state"]):
+    elif(not request.json["state"]):
         print("No state")
         return jsonify({'message': 'No state'}), 500
     
     
     else:
-        post = Coupon.query.get(int(request.form["coupon_id"]))
-        post.used=int(request.form["state"])
+        post = Coupon.query.get(int(request.json["coupon_id"]))
+        post.used=2
 
         db.session.commit()
 
@@ -287,8 +287,8 @@ def read_coupon():
         return jsonify({'message': 'No coupon_id'}), 500
     '''
     #else:
-    post = Coupon.query.get(int(request.form["coupon_id"]))
-    post.used=int(request.form["state"])
+    post = Coupon.query.get(int(request.json["coupon_id"]))
+    post.used=3
 
     db.session.commit()
 

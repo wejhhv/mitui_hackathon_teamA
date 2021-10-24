@@ -112,9 +112,6 @@ def self_create_coupon():
     return jsonify({'message': 'Complete Coupon Create'}), 200
 
 
-
-/coupon/shopId=1&shopId=1&discoiuntRate=1
-
 #店がクーポン作成
 @app.route('/coupon',methods=["POST","GET"])
 def create_coupon():

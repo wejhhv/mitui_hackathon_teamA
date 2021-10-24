@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-shop_name=["北海道商店","東北商店","関東商店","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
+shop_name_list=["北海道商店","東北商店","関東商店","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
@@ -54,6 +54,30 @@ def create_user():
     db.session.close()
 
     return jsonify({'message': 'Complete Coupon Create'}), 200
+
+#ユーザの仮登録
+@app.route('/create_users',methods=["POST","GET"])
+def create_users():
+
+    if(not request.form["name"]): 
+        print("No name")
+        return jsonify({'message': 'No name'}), 500
+
+    elif(not request.form["age"]):
+        print("No age")
+        return jsonify({'message': 'No age'}), 500
+
+    new_post = User(name=request.form["name"],
+                    age=request.form["age"],
+        )
+
+    db.session.add(new_post)
+    db.session.commit()
+    db.session.close()
+
+    print(new_post.id)
+
+    return jsonify({'userId': new_post.id}), 200
 
 
 #クーポン作成
@@ -101,6 +125,7 @@ def customer_coupons(shopId,sheetNumber):
     for post in posts:
         st={'id': post.id, 
         'shopId': post.shopId, 
+        'shop_name':shop_name_list[post.shopId],
         'discountRate': post.discountRate,}
         
         l.append(st)
@@ -119,7 +144,7 @@ def customer_use_coupon():
         print("No coupon_id")
         return jsonify({'message': 'No coupon_id'}), 500
     
-    if(not request.form["state"]):
+    elif(not request.form["state"]):
         print("No state")
         return jsonify({'message': 'No state'}), 500
 
@@ -161,6 +186,7 @@ def receiver_coupon():
         'text': post.text, 
         'sheetNumber': post.sheetNumber,
         'shopId':post.shopId,
+        'shop_name':shop_name_list[post.shopId],
         'user':{"name":user_post.name,
                 "age":user_post.age
 
@@ -229,6 +255,7 @@ def all_view_coupon():
         'user_id': posts[i].user_id, 
         'text': posts[i].text, 
         'shopId': posts[i].shopId,
+        'shop_name':shop_name_list[posts.shopId],
         'used': posts[i].used,
         'qr':posts[i].qr,
         'discountRate':posts[i].discountRate,

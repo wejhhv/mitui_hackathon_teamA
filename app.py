@@ -175,6 +175,7 @@ def customer_coupons():
         'shopId': post.shopId, 
         'shop_name':shop_name_list[post.shopId],
         'discountRate': post.discountRate,
+        'sheetNumber':post.sheetNumber,
         }
         
         l.append(st)

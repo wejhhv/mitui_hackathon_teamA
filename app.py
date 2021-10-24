@@ -100,7 +100,7 @@ def create_users():
 def create_coupon():
     print(int(request.form["shopId"]))
     
-    
+    '''
     if(not request.form["shopId"]): 
         print("No shopId")
         return jsonify({'message': 'No shopId'}), 500
@@ -113,18 +113,20 @@ def create_coupon():
         print("No sheetNumber")
         return jsonify({'message': 'No sheetNumber'}), 500
     
-    else:
-        new_post = Coupon(shopId=int(request.form["shopId"]),
-                            discountRate=int(request.form["discountRate"]),
-                            sheetNumber=int(request.form["sheetNumber"]),
-                            used=0,
+    '''
+    
+    #else:
+    new_post = Coupon(shopId=int(request.json["shopId"]),
+                        discountRate=int(request.json["discountRate"]),
+                        sheetNumber=int(request.json["sheetNumber"]),
+                        used=0,
         )
 
-        db.session.add(new_post)
-        db.session.commit()
-        db.session.close()
+    db.session.add(new_post)
+    db.session.commit()
+    db.session.close()
 
-        return jsonify({'message': 'Complete Coupon Create'}), 200
+    return jsonify({'message': 'Complete Coupon Create'}), 200
 
 
 

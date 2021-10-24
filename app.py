@@ -266,6 +266,7 @@ def use_receiver_coupon():
     
     '''
     #else:
+    print(request.json["coupon_id"])
     post = Coupon.query.get(int(request.json["coupon_id"]))
     post.used=2
 
@@ -275,7 +276,7 @@ def use_receiver_coupon():
 
 
 
-#レシーバが客のQRを読み取った
+#レシーバが客のQRを読み取った2→3
 @app.route('/coupons/read',methods=["PATCH"])
 def read_coupon():
     

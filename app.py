@@ -4,14 +4,18 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime
 from sqlalchemy.sql.functions import current_timestamp
 import json
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.todo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+CORS(app)
 db = SQLAlchemy(app)
 
 shop_name_list=["北海道商店","東北商店","関東商店","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
+_list=["ビール","サワー","食べ放題","韓国商店","関西商店","四国商店","中国商店","九州商店","沖縄商店"]
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
@@ -31,6 +35,8 @@ class Coupon(db.Model):
     shopId = db.Column(db.Integer, nullable=True)
     used = db.Column(db.Integer, nullable=True)
     discountRate=db.Column(db.Integer, nullable=True)
+    #あとで修正
+
     sheetNumber=db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now,nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now,nullable=False)
@@ -123,7 +129,8 @@ def customer_coupons(shopId,sheetNumber):
         st={'id': post.id, 
         'shopId': post.shopId, 
         'shop_name':shop_name_list[post.shopId],
-        'discountRate': post.discountRate,}
+        'discountRate': post.discountRate,
+        }
         
         l.append(st)
     
